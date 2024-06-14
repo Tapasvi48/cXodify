@@ -17,10 +17,9 @@ sadsad
 sadsad
 sadsad
 "
-Function Name:Average of Number
+Function Name: Average
 Input Structure:
-Input Field:list<int>num,int num
-Input Field:int num
+Input Field: list<list<string>>num1
+Input Field: float k
 Output Structure:
-Output Field: int result
-Output Field:list<num>
+Output Field:list<int> result
