@@ -1,4 +1,4 @@
-public List<Integer> Average(unknown num1, float k) {
+public List<Integer> Average(List<Boolean> num1) {
     List<Integer> result; // Initialize result
     // Replace this with actual implementation logic
     return result;

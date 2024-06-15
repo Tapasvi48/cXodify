@@ -11,15 +11,9 @@ public class Main {
         String[] input = scanner.nextLine().split(" ");
         int size_num1;
 std::cin >> size_num1;
-list<string> num1(size_num1);
-list<string> num1__temp;
-for (int j = 0; j < num1_.size(); ++j) {
-  std::cin >> num1__temp;
-  num1_[j] = num1__temp;
-}
+bool num1(size_num1);
 
-
-        List<Integer> result = Average(num1, k);
+        List<Integer> result = Average(num1);
         System.out.println(result);
     }
 }

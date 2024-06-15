@@ -19,7 +19,6 @@ sadsad
 "
 Function Name: Average
 Input Structure:
-Input Field: list<list<string>>num1
-Input Field: float k
+Input Field: list<bool>num1
 Output Structure:
 Output Field:list<int> result

@@ -133,8 +133,9 @@ return 0;
         // string , boolan ,int ,float, double
         //handle 2d ,3d  array
         // list<list<int>>
-        const listType = field.type.substring(5, field.type.length - 1); // Extract inner type like 'int' from 'list<int> or list<list<int>> ->list<int>'
+        // Extract inner type like 'int' from 'list<int> or list<list<int>> ->list<int>'
         const depth = this.getListDepth(field.type); // Get depth of nested lists
+        console.log("depth iss ", depth);
         let code = "";
         let dimensions = [];
         for (let i = 0; i < depth; i++) {
@@ -142,17 +143,67 @@ return 0;
             code += `std::cin >> n${i + 1};\n`;
             dimensions.push(`n${i + 1}`);
         }
-        code += `${this.mapToCpp(field.type)}${field.name};\n`;
-        code += this.generateResizeCode(field.name, listType, dimensions, depth);
+        // code += `${this.mapToCpp(field.type)}${field.name};\n`;
+        //list type->list<int<int>>
         const match = field.type.match(/list(<.*>)+/);
         let fieldType = "";
         if (match) {
             fieldType = match[0]
                 .split("<")[match[0].split("<").length - 1].split(">")[0];
         }
+        const f1 = fieldType;
+        code += this.generateInitialization(field.name, f1, dimensions);
         code += this.generateRecurrsiveInput(field.name, fieldType, dimensions, 0);
         console.log("cpp codessss is", code);
         return code;
+    }
+    generateInitialization(fieldName, type, dimensions) {
+        let initCode = this.generateNestedInitialization(dimensions.length, type, dimensions);
+        initCode += `${fieldName};\n`;
+        return initCode;
+    }
+    generateassign(depth, fieldType, dimensions) {
+        if (depth === dimensions.length + 1) {
+            let str = "";
+            if (fieldType == "int") {
+                str = "0";
+            }
+            else if (fieldType == "bool") {
+                str = "true";
+            }
+            for (let i = 0; i < dimensions.length; i++) {
+                str += ")";
+            }
+            return str;
+        }
+        let str = "";
+        if (depth !== 0) {
+            str += "(";
+        }
+        str += dimensions[depth - 1];
+        str += ",";
+        for (let i = 0; i < dimensions.length - depth; i++) {
+            str += `std::vector<`;
+        }
+        if (dimensions.length - depth > 0) {
+            str += `${fieldType}`;
+        }
+        for (let i = 0; i < dimensions.length - depth; i++) {
+            str += `>`;
+        }
+        str += this.generateassign(depth + 1, fieldType, dimensions);
+        return str;
+    }
+    generateNestedInitialization(depth, fieldType, dimensions) {
+        if (depth === 0) {
+            let str = `${fieldType}`;
+            for (let i = 0; i < dimensions.length; i++) {
+                str += ">";
+            }
+            str += this.generateassign(1, fieldType, dimensions);
+            return str;
+        }
+        return `std::vector<${this.generateNestedInitialization(depth - 1, fieldType, dimensions)}`;
     }
     generateRecurrsiveInput(vectorName, listType, dimensions, depth) {
         if (depth === dimensions.length) {
@@ -164,27 +215,6 @@ return 0;
         innerCode += this.generateRecurrsiveInput(`vec${depth}`, listType, dimensions, depth + 1);
         innerCode += `}\n`;
         return innerCode;
-    }
-    generateResizeCode(fieldName, listType, dimensions, depth) {
-        if (depth === 1) {
-            return `${fieldName}.resize(${dimensions[0]});\n`;
-        }
-        let innerInitialization = `std::vector<${this.mapToCpp(listType)}>`;
-        for (let i = 1; i < depth - 1; i++) {
-            innerInitialization = `std::vector<${innerInitialization}>`;
-        }
-        return `${fieldName}.resize(${dimensions[0]}, ${this.generateInnerVectorInitialization(listType, dimensions, depth - 1)});\n`;
-    }
-    // Recursive function to generate inner vector initialization
-    generateInnerVectorInitialization(listType, dimensions, depth) {
-        if (depth === 1) {
-            return `std::vector<${listType}>(${dimensions[1]})`;
-        }
-        let nestedInitialization = `std::vector<${listType}>`;
-        for (let i = 1; i < depth - 1; i++) {
-            nestedInitialization = `std::vector<${nestedInitialization}>`;
-        }
-        return `std::vector<${nestedInitialization}>(${dimensions[depth - 1]}, ${this.generateInnerVectorInitialization(listType, dimensions, depth - 1)})`;
     }
     getListDepth(type) {
         //list<
@@ -212,6 +242,8 @@ return 0;
                 return "vector<string>";
             case "list<list<int>>":
                 return "vector<vector<int>>";
+            case "list<list<list<list<string>>>>":
+                return "vector<vector<vector<vector<string>>>>";
             default:
                 return "unknown";
         }
