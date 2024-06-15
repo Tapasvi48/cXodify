@@ -12,3 +12,40 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  createdAt DateTime
+  updatedAt DateTime
+  role      UserRole @default(USER)
+}
+
+model Problem {
+  id              String     @id @default(cuid())
+  title           String
+  createdAt       String
+  hidden          Boolean    @default(true)
+  slug            String     @unique
+  updatedAt       String
+  description     String
+  boilerplateCode String
+  solved          Int        @default(0)
+  // accepted 
+  submissions     Int        @default(0)
+  difficulty      Difficulty @default(MEDIUM)
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
