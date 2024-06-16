@@ -8,6 +8,7 @@ import { columns } from "../components/problem-table/column";
 import { DataTable } from "../components/problem-table/table";
 
 import { taskSchema } from "../components/problem-table/data/schema";
+import { Problems } from "@/components/problems/problem";
 
 export const metadata: Metadata = {
   title: "Tasks",
@@ -28,19 +29,5 @@ async function getTasks() {
 export default async function TaskPage() {
   const tasks = await getTasks();
 
-  return (
-    <>
-      <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
-        <div className="flex items-center justify-between space-y-2">
-          <div className="flex items-center space-x-2"></div>
-        </div>
-        <div className="w-full flex gap-10">
-          <div className="w-2/3">
-            <DataTable data={tasks} columns={columns} />
-          </div>
-          <div className="w-full">Upcoming Contest</div>
-        </div>
-      </div>
-    </>
-  );
+  return <Problems />;
 }
