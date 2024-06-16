@@ -56,5 +56,11 @@ function generateFullProblemCode(generatorFilePath) {
     fs_1.default.writeFileSync(path_1.default.join(boilerplatePath, "function.java"), javaCode);
     console.log("Boilerplate code generated successfully!");
 }
-generateProblemCode("/problems/average-problem");
-generateFullProblemCode("/problems/average-problem");
+const args = process.argv.slice(2);
+if (args.length < 1) {
+    console.error("Please provide the path to the problem directory.");
+    process.exit(1);
+}
+const generatorFilePath = args[0];
+generateProblemCode(`/problems/${generatorFilePath}`);
+generateFullProblemCode(`/problems/${generatorFilePath}`);

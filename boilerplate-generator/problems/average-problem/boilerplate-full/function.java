@@ -11,7 +11,7 @@ public class Main {
         String[] input = scanner.nextLine().split(" ");
         int size_num1;
 std::cin >> size_num1;
-bool num1(size_num1);
+int num1(size_num1);
 
         List<Integer> result = Average(num1);
         System.out.println(result);

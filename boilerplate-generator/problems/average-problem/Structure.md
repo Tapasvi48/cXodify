@@ -10,15 +10,9 @@ float
 list
  -->
 
-Problem Name:"Average of number in a array1w21312
-sadsad
-sad
-sadsad
-sadsad
-sadsad
-"
+Problem Name:"Average of number in a array"
 Function Name: Average
 Input Structure:
-Input Field: list<bool>num1
+Input Field: list<int>num1
 Output Structure:
 Output Field:list<int> result

@@ -8,7 +8,7 @@
 int main() {
 int n1;
 std::cin >> n1;
-std::vector<bool>(n1,true)num1;
+std::vector<int>(n1,0)num1;
 for (auto& vec0 : num1) {
 cin >> vec0;
 }
