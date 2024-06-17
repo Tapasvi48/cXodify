@@ -12,4 +12,21 @@ export const getAllProblem = async () => {
   return problems;
 };
 
-export const getProblemById = () => {};
+export const getProblemById = async (id: string) => {
+  const problems = await db.problem.findMany({
+    where: {
+      AND: [
+        {
+          hidden: false,
+        },
+        {
+          id: id,
+        },
+      ],
+    },
+    include: {
+      defaultCode: true,
+    },
+  });
+  return problems;
+};

@@ -8,7 +8,7 @@ import { columns } from "../components/problem-table/column";
 import { DataTable } from "../components/problem-table/table";
 
 import { taskSchema } from "../components/problem-table/data/schema";
-import { Problems } from "@/components/problems/problem";
+import { Problems } from "@/components/problems/Problem";
 
 export const metadata: Metadata = {
   title: "Tasks",
