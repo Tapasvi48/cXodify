@@ -20,38 +20,46 @@ const submit_code = async (req: NextRequest, res: NextResponse) => {
     throw new ApiError(400, "Validation Error");
     // you can do more abstarcation
   }
-  const problem = await getproblem(problemId);
-  //create a submission
+  try {
+    const problem = await getproblem(problemId);
+    //create a submission
 
-  const problemData = await getProblemData(
-    problemId,
-    problem.slug,
-    languageSlug
-  );
+    const problemData = await getProblemData(
+      problemId,
+      problem.slug,
+      languageSlug
+    );
 
-  console.log(problemData, "problem data is");
-  //this data will be given by the juge
-  const submission = await prisma.submission.create({
-    data: {
-      problemId: problemId,
-      userId: userId,
-      status: "PENDING",
-      languageCode: parseInt(languageId),
-      totalCases: problemData.inputs.length,
-    },
-  });
-  const response = await submitBatchCode(
-    problemData,
-    sourceCode,
-    submission.id
-  );
+    console.log(problemData, "problem data is");
+    //this data will be given by the juge
+    const submission = await prisma.submission.create({
+      data: {
+        problemId: problemId,
+        userId: userId,
+        status: "PENDING",
+        languageCode: parseInt(languageId),
+        totalCases: problemData.inputs.length,
+      },
+    });
+    const response = await submitBatchCode(
+      problemData,
+      sourceCode,
+      submission.id
+    );
 
-  return NextResponse.json({
-    message: "Submmison made succes",
-    status: 200,
-    submission: submission,
-    submissionId: submission.id,
-  });
+    return NextResponse.json({
+      message: "Submmison made succes",
+      status: 200,
+      submission: submission,
+      submissionId: submission.id,
+    });
+  } catch (error: any) {
+    console.log("error is", error.message);
+    return NextResponse.json({
+      error: error.message,
+      status: 500,
+    });
+  }
 };
 
 /// Wrapping handle in custom_middleware
