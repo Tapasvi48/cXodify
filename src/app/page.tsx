@@ -7,13 +7,13 @@ import Image from "next/image";
 import image from "../../public/logo.png";
 import image2 from "../../public/back.png";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
 
   const router = useRouter();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (status === "authenticated") {
       router.push("/dashboard");
     }
