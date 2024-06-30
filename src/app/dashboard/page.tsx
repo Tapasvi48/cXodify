@@ -9,8 +9,9 @@ import Problems from "@/components/problems/Problem";
 
 import { auth } from "@/components/problems/auth";
 import { getServerSession } from "next-auth";
-import { authOption } from "../api/auth/[...nextauth]/route";
+
 import { getUserSolvedProblem } from "../db/userproblem";
+import { authOption } from "@/lib/utils";
 
 const DashboardPage = async () => {
   const problems = await getAllProblem();
