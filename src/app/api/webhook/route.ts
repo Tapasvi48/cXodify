@@ -38,7 +38,7 @@ export async function PUT(req: NextRequest, res: NextResponse) {
       attempts++;
       try {
         await db.$transaction(
-          async (db) => {
+          async (db: any) => {
             // Find the submission
             if (!isCorrect) {
               const submission = await db.submission.findFirst({
