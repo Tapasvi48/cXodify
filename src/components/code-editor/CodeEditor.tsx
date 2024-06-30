@@ -138,6 +138,7 @@ const CodeEditor = ({
       languageId: languageConstants[language],
       languageSlug: language,
     };
+    console.log(data);
     const result = await axios.post("/api/submission", data);
     pollSubmissionResult(result.data.submissionId);
   };
