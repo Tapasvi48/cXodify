@@ -17,7 +17,7 @@ const SubmissionTable = ({ id, userId }: { id: string; userId: string }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/getAllSubmission?id=${id}&userId=${userId}`
+          `/api/getAllSubmission?id=${id}&userId=${userId}`
         );
         setSubmission(response?.data?.result);
       } catch (error: any) {
