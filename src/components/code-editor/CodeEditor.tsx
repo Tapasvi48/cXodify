@@ -138,10 +138,7 @@ const CodeEditor = ({
       languageId: languageConstants[language],
       languageSlug: language,
     };
-    const result = await axios.post(
-      "http://localhost:3000/api/submission",
-      data
-    );
+    const result = await axios.post("/api/submission", data);
     pollSubmissionResult(result.data.submissionId);
   };
 

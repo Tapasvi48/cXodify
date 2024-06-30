@@ -70,7 +70,7 @@ export const submitBatchCode = async (
     ),
     stdin: problemData.inputs[index],
     expected_output: problemData.outputs[index],
-    callback_url: `https://7dbf-103-48-199-31.ngrok-free.app/api/webhook/?id=${submissionId}`,
+    callback_url: `https://cxodify.vercel.app/api/webhook/?id=${submissionId}`,
   }));
   console.log("submission", submissions, problemData.outputs[1]);
 
