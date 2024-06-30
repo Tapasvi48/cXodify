@@ -79,7 +79,6 @@ export class ProblemDefinitionParser {
         }
       }
     });
-    console.log(this.inputField, "hey");
   }
   setCodeGenerator(generator: CodeGenerator): void {
     this.codeGenerator = generator;
@@ -118,7 +117,8 @@ export class CppCodeGenerator implements CodeGenerator {
     const inputParams = inputField
       .map((item) => `${this.mapToCpp(item.type)} ${item.name}`)
       .join(",");
-    console.log("output field is", functionName);
+
+    console.log(inputParams, "input params are");
     cppCode += `${this.mapToCpp(
       outputField[0].type
     )} ${functionName}(${inputParams}) {\n`;
@@ -138,6 +138,8 @@ export class CppCodeGenerator implements CodeGenerator {
     const inputs = inputField
       .map((field) => `${field.type} ${field.name}`)
       .join(", ");
+    console.log("input is", inputField);
+
     const inputReads = inputField
       .map((field) => {
         return this.generateCppInputRead(field);
@@ -153,6 +155,7 @@ export class CppCodeGenerator implements CodeGenerator {
 #include <iostream>
 #include <vector>
 #include <string>
+using namespace std;
 
 ##USER_CODE_HERE##
 
@@ -168,6 +171,7 @@ return 0;
     if (!field.type.startsWith("list<")) {
       return `std::cin >> ${field.name};`;
     }
+    console.log("field is", field);
     // string , boolan ,int ,float, double
 
     //handle 2d ,3d  array
@@ -194,6 +198,7 @@ return 0;
         .split("<")
         [match[0].split("<").length - 1].split(">")[0];
     }
+    // field Type is
     const f1 = fieldType;
     code += this.generateInitialization(field.name, f1, dimensions);
     code += this.generateRecurrsiveInput(field.name, fieldType, dimensions, 0);
@@ -209,9 +214,10 @@ return 0;
     let initCode = this.generateNestedInitialization(
       dimensions.length,
       type,
+      fieldName,
       dimensions
     );
-    initCode += `${fieldName};\n`;
+    initCode += `;\n`;
 
     return initCode;
   }
@@ -219,6 +225,7 @@ return 0;
   private generateassign(
     depth: number,
     fieldType: string,
+    fieldName: string,
     dimensions: string[]
   ): string {
     if (depth === dimensions.length + 1) {
@@ -250,13 +257,15 @@ return 0;
     for (let i = 0; i < dimensions.length - depth; i++) {
       str += `>`;
     }
-    str += this.generateassign(depth + 1, fieldType, dimensions);
+
+    str += this.generateassign(depth + 1, fieldType, fieldName, dimensions);
     return str;
   }
 
   private generateNestedInitialization(
     depth: number,
     fieldType: string,
+    fieldName: string,
     dimensions: string[]
   ): string {
     if (depth === 0) {
@@ -264,13 +273,15 @@ return 0;
       for (let i = 0; i < dimensions.length; i++) {
         str += ">";
       }
-      str += this.generateassign(1, fieldType, dimensions);
+      str += `${fieldName}`;
+      str += this.generateassign(1, fieldType, fieldName, dimensions);
       return str;
     }
 
     return `std::vector<${this.generateNestedInitialization(
       depth - 1,
       fieldType,
+      fieldName,
       dimensions
     )}`;
   }
@@ -464,15 +475,6 @@ public class Main {
 }
 
 //  function name is ->Single line
-const pb1 = new ProblemDefinitionParser();
-pb1.parse(`
-  Problem Name: "Average of number in an array"
-  Function Name: sum
-  Input Structure:
-  Input Field: list<int> num
-  Output Structure:
-  Output Field: int result
-`);
 
 // const cppGenerator = new CppCodeGenerator();
 // pb1.setCodeGenerator(cppGenerator);

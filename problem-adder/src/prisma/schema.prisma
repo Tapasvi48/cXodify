@@ -10,44 +10,90 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgres://default:JhexVPkg84za@ep-muddy-wind-a11aozba.ap-southeast-1.aws.neon.tech:5432/verceldb?sslmode=require"
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  firstName String
-  lastName  String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String          @id @default(cuid())
+  email          String          @unique
+  firstName      String
+  lastName       String
+  password       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  submissions    Submission[]
+  solvedProblems SolvedProblem[]
+  role           UserRole        @default(USER)
+}
 
-  role UserRole @default(USER)
+model SolvedProblem {
+  id         String     @id @default(cuid())
+  userId     String
+  problemId  String
+  solvedAt   DateTime   @default(now())
+  difficulty Difficulty
+
+  user    User    @relation(fields: [userId], references: [id])
+  problem Problem @relation(fields: [problemId], references: [id])
+
+  @@unique([userId, problemId])
 }
 
 model Problem {
-  id          String        @id @default(cuid())
+  id          String          @id @default(cuid())
   title       String
-  hidden      Boolean       @default(true)
-  slug        String        @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  hidden      Boolean         @default(true)
+  slug        String          @unique
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
   description String
-  solved      Int           @default(0)
+  solved      Int             @default(0)
   // accepted 
-  submissions Int           @default(0)
-  difficulty  Difficulty    @default(MEDIUM)
+  submissions Int             @default(0)
+  submission  Submission[]
+  difficulty  Difficulty      @default(MEDIUM)
   defaultCode DefaultCode[]
+  solvedBy    SolvedProblem[]
+}
+
+model Submission {
+  id             String           @id @default(cuid())
+  problemId      String
+  userId         String
+  testcases      TestCase[]
+  status         SubmissionStatus @default(PENDING)
+  memory         Int?
+  time           Float?
+  languageCode   Int
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @updatedAt
+  totalCases     Int              @default(0)
+  evaluatedCases Int              @default(0)
+  user           User             @relation(fields: [userId], references: [id])
+  problem        Problem          @relation(fields: [problemId], references: [id])
+}
+
+model TestCase {
+  id              String      @id @default(cuid())
+  submissionId    String?
+  stdout          String?
+  status          TestStatus  @default(PENDING)
+  correct         Boolean     @default(false)
+  expected_output String?
+  token           String?     @unique @db.VarChar
+  Submission      Submission? @relation(fields: [submissionId], references: [id])
 }
 
 model DefaultCode {
   id         String   @id @default(cuid())
   languageId Int
-  problemId  String
+  problemId  String   @unique
   code       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   problem    Problem  @relation(fields: [problemId], references: [id])
+
+  @@unique([problemId, languageId])
 }
 
 enum UserRole {
@@ -59,4 +105,16 @@ enum Difficulty {
   EASY
   MEDIUM
   HARD
+}
+
+enum SubmissionStatus {
+  AC
+  REJECTED
+  PENDING
+}
+
+enum TestStatus {
+  FAILED
+  ACCEPTED
+  PENDING
 }

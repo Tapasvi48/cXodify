@@ -2,8 +2,23 @@ import prisma from "./prisma/index";
 import fs from "fs";
 
 const MOUNT_PATH =
-  process.env.MOUNT_PATH ?? "../../boilerplate-generator/problems";
+  process.env.MOUNT_PATH ?? "../../boilerplate-generator/src/problems";
+async function getProblemFullBoilerplateCode(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    fs.readFile(
+      "/Users/tapasviarora/Desktop/cXodify/boilerplate-generator/src/problems/average-problem/boilerplate/function.cpp",
+      { encoding: "utf-8" },
+      (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      }
+    );
+  });
+}
 const addQuestion = async (problemSlug: string) => {
+  const boilerplate = await getProblemFullBoilerplateCode();
   const problemdescription = fs.readFileSync(
     `${MOUNT_PATH}/${problemSlug}/Problem.md`,
     "utf-8"
@@ -18,11 +33,33 @@ const addQuestion = async (problemSlug: string) => {
       description: problemdescription,
       hidden: false,
       title: problemSlug,
+      defaultCode: {
+        create: [
+          {
+            languageId: 54,
+            code: boilerplate,
+          },
+        ],
+      },
     },
     update: {
       description: problemdescription,
     },
   });
+  const defaultCode = await prisma.defaultCode.upsert({
+    where: {
+      problemId: problems.id,
+    },
+    create: {
+      languageId: 54,
+      problemId: problems.id,
+      code: boilerplate,
+    },
+    update: {
+      code: boilerplate,
+    },
+  });
+
   if (problems) {
     console.log("successfully added problem in db");
   }

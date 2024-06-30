@@ -32,6 +32,9 @@ const addQuestion = (problemSlug) => __awaiter(void 0, void 0, void 0, function*
             description: problemdescription,
         },
     });
+    if (problems) {
+        console.log("successfully added problem in db");
+    }
 });
 const args = process.argv.slice(2);
 if (args.length < 1) {

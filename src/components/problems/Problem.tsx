@@ -7,16 +7,26 @@ import {
   Link,
   Image,
 } from "@nextui-org/react";
-import { Button } from "../ui/button";
 import { getAllProblem } from "@/app/db/problem";
-import { FaCheckCircle, FaClipboardList, FaPercent } from "react-icons/fa";
-import { CardContent } from "../ui/card";
+import { FaCheck, FaCheckCircle, FaClipboardList } from "react-icons/fa";
+import { getUserSolvedProblem } from "@/app/db/userproblem";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { auth } from "./auth";
 
-export async function Problems() {
-  const problems = await getAllProblem();
+export default function Problems({
+  problems,
+  userSolvedProblem,
+}: {
+  problems: any[];
+  userSolvedProblem: any[];
+}) {
+  const solvedProblemIds = userSolvedProblem?.map(
+    (problem: any) => problem.problemId
+  );
 
+  console.log("solved problem", solvedProblemIds);
   return (
-    <section className="bg-white dark:bg-gray-900 py-8 md:py-12 min-h-screen">
+    <section className="py-8 md:py-12">
       <div className="container mx-auto px-4 md:px-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Popular Problems</h2>
@@ -25,8 +35,12 @@ export async function Problems() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {problems.map((problem) => (
-            <ProblemCard problem={problem} key={problem.id} />
+          {problems?.map((problem: any) => (
+            <ProblemCard
+              problem={problem}
+              key={problem.id}
+              isSolved={solvedProblemIds.includes(problem.id)}
+            />
           ))}
         </div>
       </div>
@@ -34,29 +48,48 @@ export async function Problems() {
   );
 }
 
-function ProblemCard({ problem }: { problem: any }) {
+export function ProblemCard({
+  problem,
+  isSolved,
+}: {
+  problem: any;
+  isSolved: boolean;
+}) {
   return (
-    <Card className="max-w-[300px] bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
-      <CardHeader className="flex gap-3 p-4 bg-blue-500 text-white">
-        <Image
-          alt="problem logo"
-          height={40}
-          radius="sm"
-          src={
-            problem.logoUrl ||
-            "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-          }
-          width={40}
-        />
-        <div className="flex flex-col">
-          <p className="text-md font-bold">{problem.title}</p>
-          <p className="text-small text-default-200">
-            {problem.difficulty || "example.com"}
-          </p>
+    <Card className="max-w-[300px] rounded-lg overflow-hidden shadow-lg">
+      <CardHeader
+        className={`flex items-center gap-3 p-4 ${
+          isSolved ? "bg-green-500" : "bg-blue-500"
+        } text-white`}
+      >
+        <div className="flex items-center">
+          <Image
+            alt="problem logo"
+            height={40}
+            radius="sm"
+            src={
+              problem.logoUrl ||
+              "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+            }
+            width={40}
+          />
+          <div className="flex flex-col ml-3">
+            <p className="text-md font-bold">{problem.title}</p>
+            <p className="text-small text-default-200">
+              {problem.difficulty || "example.com"}
+            </p>
+          </div>
         </div>
+        <div className="flex-grow"></div>
+        {isSolved && (
+          <div>
+            <FaCheck className="text-white text-md mr-2" />
+          </div>
+        )}
       </CardHeader>
+
       <Divider />
-      <CardBody className="p-6">
+      <CardBody className="p-6 dark:bg-gray-800">
         <div className="flex flex-row justify-between items-center space-x-4">
           <div className="flex flex-col items-center bg-gray-50 p-4 rounded-lg shadow-md dark:bg-gray-700 flex-1">
             <FaCheckCircle className="text-green-500 text-md mb-2" />
@@ -79,11 +112,8 @@ function ProblemCard({ problem }: { problem: any }) {
       <Divider />
       <CardFooter className="p-4 bg-gray-100 dark:bg-gray-700 flex justify-between items-center">
         <Link
-          isExternal
           showAnchorIcon
-          href={
-            `/problem/${problem.id}` || "https://github.com/nextui-org/nextui"
-          }
+          href={`/problem/${problem.id}`}
           className="text-sm"
         >
           Go to Problem

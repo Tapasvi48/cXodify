@@ -3,6 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./provider";
 
+import { SearchIcon } from "lucide-react";
+import Navbar from "@/components/Navbar/Navbar";
+import SessionWrapper from "@/components/Wrapper/SessionWrapper";
+import { Toaster } from "@/components/ui/toaster";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -16,8 +21,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <body className={inter.className}>
+          <Providers>
+            <Navbar />
+            <main>
+              <Toaster />
+            </main>
+            {children}
+          </Providers>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }
