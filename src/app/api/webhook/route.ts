@@ -101,8 +101,18 @@ export async function PUT(req: NextRequest, res: NextResponse) {
                     status: "AC",
                   },
                 });
-                await db.solvedProblem.create({
-                  data: {
+                await db.solvedProblem.upsert({
+                  where: {
+                    userId_problemId: {
+                      userId: updatedSubmission.userId,
+                      problemId: updatedSubmission.problemId,
+                    },
+                  },
+                  update: {
+                    difficulty: problem.difficulty,
+                    solvedAt: new Date(),
+                  },
+                  create: {
                     userId: updatedSubmission.userId,
                     problemId: updatedSubmission.problemId,
                     difficulty: problem.difficulty,
