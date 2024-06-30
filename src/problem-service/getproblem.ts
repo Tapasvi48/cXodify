@@ -27,8 +27,15 @@ interface Problem {
 }
 
 const MOUNT_PATH = "../../boilerplate-generator/problems";
-const BOILERPLATE_PATH = path.resolve(
-  process.cwd() + "/cXodify" + "../../public/boilerplate-generator/src/problems"
+
+const BOILERPLATE_PATH = path.join(
+  process.cwd(),
+  "src",
+  "app",
+  "data",
+  "boilerplate-generator",
+  "src",
+  "problems"
 );
 console.log("boiler plate path is", BOILERPLATE_PATH);
 export const getProblemData = async (
