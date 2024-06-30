@@ -95,7 +95,10 @@ const CodeEditor = ({
       try {
         const response = await fetch(`/api/getSubmissionResult?id=${id}`);
         const data = await response.json();
-        if (data.result.status === "AC" || data.result.status === "REJECTED") {
+        if (
+          data?.result?.status === "AC" ||
+          data?.result?.status === "REJECTED"
+        ) {
           clearInterval(interval);
           setResult(data.result.status);
           setLoading(false);
@@ -140,6 +143,7 @@ const CodeEditor = ({
     };
     console.log(data);
     const result = await axios.post("/api/submission", data);
+    console.log("rsult is", result);
     pollSubmissionResult(result.data.submissionId);
   };
 

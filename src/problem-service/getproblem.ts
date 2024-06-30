@@ -2,7 +2,6 @@ import { ApiError } from "next/dist/server/api-utils";
 import prisma from "../../problem-adder/src/prisma";
 import fs from "fs";
 import path from "path";
-import { dir } from "console";
 
 type SUPPORTED_LANGS = "js" | "cpp" | "rs";
 
@@ -29,7 +28,7 @@ interface Problem {
 
 const MOUNT_PATH = "../../boilerplate-generator/problems";
 const BOILERPLATE_PATH = path.resolve(
-  process.cwd() + "/cXodify" + "../../boilerplate-generator/src/problems"
+  process.cwd() + "/cXodify" + "../../public/boilerplate-generator/src/problems"
 );
 console.log("boiler plate path is", BOILERPLATE_PATH);
 export const getProblemData = async (
